@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist hbhe/yii2-toggle-column "*"
+php composer.phar require --prefer-dist micheleraso/yii2-toggle-column "*"
 ```
 
 or add
 
 ```
-"hbhe/yii2-toggle-column": "*"
+"micheleraso/yii2-toggle-column": "*"
 ```
 
 to the require section of your `composer.json` file.
@@ -29,7 +29,7 @@ Once the extension is installed, simply use it in your code by  :
 
 ```php
 // Controller文件中
-use hbhe\grid\actions\ToggleAction;
+use micheleraso\grid\actions\ToggleAction;
 
 public function actions()
 {
@@ -54,7 +54,7 @@ GridView::widget([
     'columns' => [
         'id',
         [
-            'class' => '\hbhe\grid\ToggleColumn',
+            'class' => '\micheleraso\grid\ToggleColumn',
             'attribute' => 'status',
             'action' => 'toggle-status',
             'onText' => '禁用',
@@ -80,4 +80,4 @@ GridView::widget([
 // Pjax::end();
 ```
 
- ![截图](https://github.com/hbhe/yii2-toggle-column/blob/master/screenshot.png)
+ ![截图](https://github.com/micheleraso/yii2-toggle-column/blob/master/screenshot.png)

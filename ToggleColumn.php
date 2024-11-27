@@ -1,5 +1,5 @@
 <?php
-namespace hbhe\grid;
+namespace micheleraso\grid;
 
 use Closure;
 use yii\grid\DataColumn;
@@ -8,7 +8,7 @@ use yii\web\View;
 use Yii;
 
 /**
- * @author hbhe <57620133@qq.com>
+ * @author micheleraso <57620133@qq.com>
  */
 class ToggleColumn extends DataColumn
 {
@@ -31,14 +31,14 @@ class ToggleColumn extends DataColumn
     public $enableAjax = true;
 
     /**
-     * @var string glyphicon for 'on' value
+     * @var string fa for 'on' value
      */
-    public $iconOn = 'ok';
+    public $iconOn = 'check';
 
     /**
-     * @var string glyphicon for 'off' value
+     * @var string fa for 'off' value
      */
-    public $iconOff = 'remove';
+    public $iconOff = 'times';
 
     /**
      * @var string text to display on the 'on' link
@@ -106,7 +106,7 @@ class ToggleColumn extends DataColumn
         }
         if ($this->confirm === null) {
             return Html::a(
-                    '<span class="glyphicon glyphicon-' . $icon . '"></span>',
+                    '<span class="fa fa-' . $icon . '"></span>',
                     $url,
                     [
                         'title' => $title,
@@ -118,7 +118,7 @@ class ToggleColumn extends DataColumn
                 ) . ($this->displayValueText ? " {$valueText}" : "");
         } else {
             return Html::a(
-                    '<span class="glyphicon glyphicon-' . $icon . '"></span>',
+                    '<span class="fa fa-' . $icon . '"></span>',
                     $url,
                     [
                         'title' => $title,

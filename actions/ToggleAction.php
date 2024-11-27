@@ -1,5 +1,5 @@
 <?php
-namespace hbhe\grid\actions;
+namespace micheleraso\grid\actions;
 
 use Yii;
 use yii\base\Action;
