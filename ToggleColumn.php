@@ -1,85 +1,63 @@
 <?php
 namespace micheleraso\grid;
 
-use Closure;
 use yii\grid\DataColumn;
 use yii\helpers\Html;
 use yii\web\View;
-use Yii;
+use luckymax\coreui\widgets\Icon;
+use micheleraso\yii\fontawesome\FAS;
+
 
 /**
- * @author micheleraso <57620133@qq.com>
+ * Class ToggleColumn
+ *
+ * @package yii2mod\toggle
  */
 class ToggleColumn extends DataColumn
 {
     /**
      * Toggle action that will be used as the toggle action in your controller
+     *
      * @var string
      */
     public $action = 'toggle';
 
-
-    /**
-     * @var string pk field name
-     */
-    public $primaryKey = 'primaryKey';
-
     /**
      * Whether to use ajax or not
+     *
      * @var bool
      */
     public $enableAjax = true;
 
     /**
-     * @var string fa for 'on' value
+     * @var string default pk column name
      */
-    public $iconOn = 'check';
+    public $pkColumn = 'id';
 
     /**
-     * @var string fa for 'off' value
+     * @var string if false, uses FontAwesomeIcons
      */
-    public $iconOff = 'times';
+    public $useCoreuiIcons = false;
 
     /**
-     * @var string text to display on the 'on' link
+     * @var string icons names
      */
-    public $onText;
+    public $onIcon = 'check';
+    public $offIcon = 'times';
 
     /**
-     * @var string text to display on the 'off' link
+     * @var string icons titles
      */
-    public $offText;
-    
-    /**
-     * @var string text to display next to the 'on' link
-     */
-    public $displayValueText = false;
-    
-    /**
-     * @var string text to display next to the 'on' link
-     */
-    public $onValueText;
-    
-    /**
-     * @var string text to display next to the 'off' link
-     */
-    public $offValueText;
-    
+    public $onTitle = 'Attiva';
+    public $offTitle = 'Disattiva';
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
-        if ($this->onText === null) {
-            $this->onText = Yii::t('app', 'On');
-        }
-        if ($this->offText === null) {
-            $this->offText = Yii::t('app', 'Off');
-        }
-        if ($this->onValueText === null) {
-            $this->onValueText = Yii::t('app', 'Active');
-        }
-        if ($this->offValueText === null) {
-            $this->offValueText = Yii::t('app', 'Inactive');
-        }
+        parent::init();
+
         if ($this->enableAjax) {
             $this->registerJs();
         }
@@ -90,45 +68,36 @@ class ToggleColumn extends DataColumn
      */
     protected function renderDataCellContent($model, $key, $index)
     {
-        $url = [$this->action, 'id' => $model->{$this->primaryKey}];
-
         $attribute = $this->attribute;
         $value = $model->$attribute;
 
+        $pkColumn = $this->pkColumn;
+        $url = [$this->action, 'id' => $model->$pkColumn, 'attribute' => $attribute];
+
         if ($value === null || $value == true) {
-            $icon = $this->iconOn;
-            $title = $this->offText;
-            $valueText = $this->onValueText;
+            $icon = $this->onIcon;
+            $title = $this->offTitle;
+            $class = 'toggle-column-on';
         } else {
-            $icon = $this->iconOff;
-            $title = $this->onText;
-            $valueText = $this->offValueText;
+            $icon = $this->offIcon;
+            $title = $this->onTitle;
+            $class = 'toggle-column-off';
         }
-        if ($this->confirm === null) {
-            return Html::a(
-                    '<span class="fa fa-' . $icon . '"></span>',
-                    $url,
-                    [
-                        'title' => $title,
-                        'class' => 'toggle-column',
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                        //'data-confirm' => $model->nickname . $title,
-                    ]
-                ) . ($this->displayValueText ? " {$valueText}" : "");
-        } else {
-            return Html::a(
-                    '<span class="fa fa-' . $icon . '"></span>',
-                    $url,
-                    [
-                        'title' => $title,
-                        'class' => 'toggle-column',
-                        'data-method' => 'post',
-                        'data-pjax' => '0',
-                        'data-confirm' => $this->getConfirm($model),
-                    ]
-                ) . ($this->displayValueText ? " {$valueText}" : "");
+
+        if ($this->useCoreuiIcons) {
+            $class .= ' icon';
         }
+
+        return Html::a(
+            $this->useCoreuiIcons ? Icon::render($icon, ['class' => $class]) : FAS::icon($icon, ['class' => $class]),
+            $url,
+            [
+                'title' => $title,
+                'class' => 'toggle-column',
+                'data-method' => 'post',
+                'data-pjax' => '0',
+            ]
+        );
     }
 
     /**
@@ -136,29 +105,20 @@ class ToggleColumn extends DataColumn
      */
     public function registerJs()
     {
-        if(Yii::$app->request->isAjax) {
-            return;
-        }
-        $js = <<<'JS'
-$(document.body).on("click", "a.toggle-column", function(e) {
-    e.preventDefault();
-    $.post($(this).attr("href"), function(data) {
-        var pjaxId = $(e.target).closest("[data-pjax-container]").attr("id");
-        $.pjax.reload({container:"#" + pjaxId});
-    });
-    return false;
-});
+        $js = <<< JS
+            $("a.toggle-column").on("click", function(e) {
+                e.preventDefault();
+                $.post($(this).attr("href"), function(data) {
+                    var pjaxId = $(e.target).closest(".grid-view").parent().attr("id");
+                    if(pjaxId) {
+                        $.pjax.reload({container:"#" + pjaxId});
+                    } else {
+                        window.location.reload(false); 
+                    }
+                });
+                return false;
+            });
 JS;
-        $this->grid->view->registerJs($js, View::POS_READY, 'pheme-toggle-column');
-    }
-
-    public $confirm;
-
-    protected function getConfirm($model)
-    {
-        if ($this->confirm instanceof Closure || is_array($this->confirm) && is_callable($this->confirm)) {
-            return call_user_func($this->confirm, $model, $this);
-        }
-        return $this->confirm;
+        $this->grid->view->registerJs($js, View::POS_READY, 'yii2mod-toggle-column');
     }
 }
