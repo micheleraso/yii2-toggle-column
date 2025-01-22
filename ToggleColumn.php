@@ -1,12 +1,13 @@
 <?php
+
 namespace micheleraso\grid;
 
-use yii\grid\DataColumn;
-use yii\helpers\Html;
+use Yii;
 use yii\web\View;
+use yii\helpers\Html;
+use yii\grid\DataColumn;
 use luckymax\coreui\widgets\Icon;
 use micheleraso\yii\fontawesome\FAS;
-
 
 /**
  * Class ToggleColumn
@@ -32,7 +33,7 @@ class ToggleColumn extends DataColumn
     /**
      * @var string default pk column name
      */
-    public $pkColumn = 'id';
+    public $pkColumn = 'primaryKey';
 
     /**
      * @var string if false, uses FontAwesomeIcons
